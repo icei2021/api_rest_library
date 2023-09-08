@@ -1,7 +1,13 @@
 const express = require("express");
 
 const app = express();
+const connectDatabase = require("./config/db");
+const dotenv = require("dotenv");
+const PORT = process.env.PORT;
 
+dotenv.config({path:"./config/config.env"})
+//Llamando a nuestra conexión
+connectDatabase();
 const users = [
     {
         name:"José",
@@ -34,6 +40,11 @@ app.delete("/test", (req, res)=>{
     res.send("Eliminando objeto")
 })
 
-app.listen(4000, ()=>{
-    console.log("Connecting to the PORT 4000");
+const server = app.listen(process.env.PORT, ()=>{
+    console.log("Connecting to the PORT "+ process.env.PORT);
 });
+
+process.on("unhandledRejection",(err, promise)=>{
+    console.log("Errors: ", err.message)
+    server.close(()=>process.exit(1))
+})
